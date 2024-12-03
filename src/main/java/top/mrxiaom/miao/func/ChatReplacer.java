@@ -1,19 +1,35 @@
 package top.mrxiaom.miao.func;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.plugin.EventExecutor;
 import top.mrxiaom.miao.SweetMiao;
 import top.mrxiaom.pluginbase.func.AutoRegister;
+import top.mrxiaom.pluginbase.utils.Util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @AutoRegister
 public class ChatReplacer extends AbstractModule implements Listener {
+    boolean enable = false;
+    EventPriority priority;
+    EventExecutor onChat = (ignored, event) -> {
+        if (!enable) return;
+        AsyncPlayerChatEvent e = (AsyncPlayerChatEvent) event;
+        if (e.isCancelled()) return;
+        Player player = e.getPlayer();
+        if (player.hasPermission("sweet.miao.chat")
+                && !player.hasPermission("sweet.miao.bypass")) {
+            e.setMessage(processChat(e.getMessage()));
+        }
+    };
     public ChatReplacer(SweetMiao plugin) {
         super(plugin);
         registerEvents();
@@ -22,16 +38,16 @@ public class ChatReplacer extends AbstractModule implements Listener {
     @Override
     public void reloadConfig(MemoryConfiguration config) {
         super.reloadConfig(config);
+        this.enable = config.getBoolean("enable", false);
+        this.priority = Util.valueOr(EventPriority.class, config.getString("priority"), EventPriority.LOW);
+        if (priority == EventPriority.MONITOR) {
+            priority = EventPriority.LOW;
+        }
+
+        HandlerList.unregisterAll(this);
+        Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, this, priority, onChat, plugin);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onChat(AsyncPlayerChatEvent e) {
-        Player player = e.getPlayer();
-        if (player.hasPermission("sweet.miao.chat")
-                && !player.hasPermission("sweet.miao.bypass")) {
-            e.setMessage(processChat(e.getMessage()));
-        }
-    }
     static Pattern patternEnd = Pattern.compile("[。！？；.!?;]+$");
     public static String processChat(String s) {
         String[] message = splitPunctuation(s.trim());
