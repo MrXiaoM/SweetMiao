@@ -6,6 +6,22 @@ enable: true
 # 不可使用 MONITOR 优先级，使用该优先级会重置回 LOW
 priority: LOW
 
+# 喵
+meow: '喵'
+# 语气词或词语
+# 当句子以以下内容结束时（忽略标点），将会替换最后一个字为meow
+mood-word:
+  # 普通语气词，以此结尾时替换最后一个字为meow
+  normal:
+    - '啊'
+    - '嘛'
+  # 疑问语气词，以此结尾时替换最后一个字为meow，无问号时自动增加中文问号
+  question:
+    - '吗'
+  # 特殊疑问语气词语，以此结尾时替换最后一个字为meow，无问号时自动增加中文问号
+  special-question:
+    - '什么'
+
 # 权限列表:
 # sweet.miao.chat -- 拥有该权限的玩家发送聊天时将被替换成猫娘格式
 # sweet.miao.bypass -- 拥有该权限的玩家，即使有以上权限，也不会被替换聊天

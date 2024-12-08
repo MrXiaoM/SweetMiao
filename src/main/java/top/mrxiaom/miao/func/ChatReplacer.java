@@ -3,16 +3,19 @@ package top.mrxiaom.miao.func;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
+import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.miao.SweetMiao;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +33,11 @@ public class ChatReplacer extends AbstractModule implements Listener {
             e.setMessage(processChat(e.getMessage()));
         }
     };
+    private String meow;
+    private final List<String>
+            moodWordsNormal = new ArrayList<>(),
+            moodWordsQuestion = new ArrayList<>(),
+            moodWordsSpecialQuestion = new ArrayList<>();
     public ChatReplacer(SweetMiao plugin) {
         super(plugin);
         registerEvents();
@@ -37,23 +45,57 @@ public class ChatReplacer extends AbstractModule implements Listener {
 
     @Override
     public void reloadConfig(MemoryConfiguration config) {
-        super.reloadConfig(config);
+        config.addDefault("mood-word", null);
         this.enable = config.getBoolean("enable", false);
         this.priority = Util.valueOr(EventPriority.class, config.getString("priority"), EventPriority.LOW);
         if (priority == EventPriority.MONITOR) {
             priority = EventPriority.LOW;
         }
 
+        meow = config.getString("meow", "喵");
+
+        moodWordsNormal.clear();
+        List<String> normal = strList(config, "mood-word.normal");
+        if (normal == null) {
+            Collections.addAll(moodWordsNormal, "啊", "嘛");
+        } else {
+            moodWordsNormal.addAll(normal);
+        }
+
+        moodWordsQuestion.clear();
+        List<String> question = strList(config, "mood-word.question");
+        if (question == null) {
+            Collections.addAll(moodWordsQuestion, "吗");
+        } else {
+            moodWordsQuestion.addAll(question);
+        }
+
+        moodWordsSpecialQuestion.clear();
+        List<String> specialQuestion = strList(config, "mood-word.special-question");
+        if (specialQuestion == null) {
+            Collections.addAll(moodWordsSpecialQuestion, "什么");
+        } else {
+            moodWordsSpecialQuestion.addAll(specialQuestion);
+        }
+
         HandlerList.unregisterAll(this);
         Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, this, priority, onChat, plugin);
     }
 
+    @Nullable
+    private static List<String> strList(MemoryConfiguration config, String key) {
+        if (config.contains(key) && config.isList(key)) {
+            return config.getStringList(key);
+        }
+        return null;
+    }
+
     static Pattern patternEnd = Pattern.compile("[。！？；.!?;]+$");
-    public static String processChat(String s) {
+    public String processChat(String s) {
         String[] message = splitPunctuation(s.trim());
-        if (message[0].endsWith("喵")) return s;
+        if (message[0].endsWith(meow)) return s;
         if (endsWithMood(message[0])) {
-            if (endsWithQuestionMood(message[0]) && !hasQuestionMark(message[1])) {
+            if (endsWithQuestionMood(message[0]) && hasNotQuestionMark(message[1])) {
                 message[0] = removeLast(message[0]);
                 message[1] = "？" + message[1];
             } else {
@@ -62,26 +104,35 @@ public class ChatReplacer extends AbstractModule implements Listener {
         }
         if (specialQuestionWords(message[0])) {
             message[0] = removeLast(message[0]);
-            if (!hasQuestionMark(message[1])) {
+            if (hasNotQuestionMark(message[1])) {
                 message[1] = "？" + message[1];
             }
         }
-        return message[0] + "喵" + message[1];
+        return message[0] + meow + message[1];
     }
     public static String removeLast(String s) {
         return s.substring(0, s.length() - 1);
     }
-    public static boolean endsWithMood(String s) {
-        return s.endsWith("啊") || s.endsWith("嘛") || endsWithQuestionMood(s);
+    public boolean endsWithMood(String s) {
+        for (String str : moodWordsNormal) {
+            if (s.endsWith(str)) return true;
+        }
+        return endsWithQuestionMood(s);
     }
-    public static boolean endsWithQuestionMood(String s) {
-        return s.endsWith("吗");
+    public boolean endsWithQuestionMood(String s) {
+        for (String str : moodWordsQuestion) {
+            if (s.endsWith(str)) return true;
+        }
+        return false;
     }
-    public static boolean specialQuestionWords(String s) {
-        return s.endsWith("什么");
+    public boolean specialQuestionWords(String s) {
+        for (String str : moodWordsSpecialQuestion) {
+            if (s.endsWith(str)) return true;
+        }
+        return false;
     }
-    public static boolean hasQuestionMark(String s) {
-        return s.contains("?") || s.contains("？");
+    public static boolean hasNotQuestionMark(String s) {
+        return !s.contains("?") && !s.contains("？");
     }
     public static String[] splitPunctuation(String str) {
         Matcher m = patternEnd.matcher(str);
