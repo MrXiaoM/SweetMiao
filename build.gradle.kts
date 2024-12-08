@@ -47,7 +47,6 @@ tasks {
         exclude("top/mrxiaom/pluginbase/func/gui/*")
         exclude("top/mrxiaom/pluginbase/utils/Adventure*")
         exclude("top/mrxiaom/pluginbase/utils/Bytes*")
-        exclude("top/mrxiaom/pluginbase/utils/PAPI*")
         exclude("top/mrxiaom/pluginbase/utils/IA*")
         exclude("top/mrxiaom/pluginbase/utils/ItemStackUtil*")
     }
