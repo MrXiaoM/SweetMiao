@@ -2,8 +2,6 @@ name: SweetMiao
 version: '${version}'
 main: top.mrxiaom.miao.SweetMiao
 api-version: 1.13
-depend: [  ]
-softdepend: [ PlaceholderAPI ]
 authors: [ MrXiaoM ]
 commands:
   sweetmiao:

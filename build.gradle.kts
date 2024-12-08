@@ -5,9 +5,9 @@ plugins {
 }
 
 group = "top.mrxiaom.miao"
-version = "1.0.0"
+version = "1.0.1"
 val targetJavaVersion = 8
-val shadowGroup = "top.mrxiaom.sweetmiao.libs"
+val shadowGroup = "top.mrxiaom.miao.libs"
 
 repositories {
     mavenLocal()
@@ -23,8 +23,6 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT")
     // compileOnly("org.spigotmc:spigot:1.20") // NMS
-
-    compileOnly("me.clip:placeholderapi:2.11.6")
 
     implementation("org.jetbrains:annotations:21.0.0")
     implementation("com.github.MrXiaoM:PluginBase:1+")
@@ -45,6 +43,13 @@ tasks {
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
+        exclude("top/mrxiaom/pluginbase/func/AbstractGui*")
+        exclude("top/mrxiaom/pluginbase/func/gui/*")
+        exclude("top/mrxiaom/pluginbase/utils/Adventure*")
+        exclude("top/mrxiaom/pluginbase/utils/Bytes*")
+        exclude("top/mrxiaom/pluginbase/utils/PAPI*")
+        exclude("top/mrxiaom/pluginbase/utils/IA*")
+        exclude("top/mrxiaom/pluginbase/utils/ItemStackUtil*")
     }
     build {
         dependsOn(shadowJar)
