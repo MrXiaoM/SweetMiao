@@ -51,6 +51,7 @@ public class ChatReplacer extends AbstractModule implements Listener {
     static Pattern patternEnd = Pattern.compile("[。！？；.!?;]+$");
     public static String processChat(String s) {
         String[] message = splitPunctuation(s.trim());
+        if (message[0].endsWith("喵")) return s;
         if (endsWithMood(message[0])) {
             if (endsWithQuestionMood(message[0]) && !hasQuestionMark(message[1])) {
                 message[0] = removeLast(message[0]);
