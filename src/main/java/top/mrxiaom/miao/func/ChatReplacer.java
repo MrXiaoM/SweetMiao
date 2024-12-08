@@ -55,8 +55,14 @@ public class ChatReplacer extends AbstractModule implements Listener {
             if (endsWithQuestionMood(message[0]) && !hasQuestionMark(message[1])) {
                 message[0] = removeLast(message[0]);
                 message[1] = "？" + message[1];
-            } else if (!specialQuestionWords(message[0])) {
+            } else {
                 message[0] = removeLast(message[0]);
+            }
+        }
+        if (specialQuestionWords(message[0])) {
+            message[0] = removeLast(message[0]);
+            if (!hasQuestionMark(message[1])) {
+                message[1] = "？" + message[1];
             }
         }
         return message[0] + "喵" + message[1];
