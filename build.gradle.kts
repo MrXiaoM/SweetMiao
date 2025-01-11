@@ -25,7 +25,7 @@ dependencies {
     // compileOnly("org.spigotmc:spigot:1.20") // NMS
 
     implementation("org.jetbrains:annotations:21.0.0")
-    implementation("com.github.MrXiaoM:PluginBase:1+")
+    implementation("top.mrxiaom:PluginBase:1.1.7")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
