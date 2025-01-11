@@ -30,6 +30,9 @@ public class ChatReplacer extends AbstractModule implements Listener {
         Player player = e.getPlayer();
         if (player.hasPermission("sweet.miao.chat")
                 && !player.hasPermission("sweet.miao.bypass")) {
+            if (matchAnyIgnorePattern(e.getMessage())) {
+                return;
+            }
             e.setMessage(processChat(e.getMessage()));
         }
     };
@@ -38,6 +41,7 @@ public class ChatReplacer extends AbstractModule implements Listener {
             moodWordsNormal = new ArrayList<>(),
             moodWordsQuestion = new ArrayList<>(),
             moodWordsSpecialQuestion = new ArrayList<>();
+    private final List<Pattern> ignorePattern = new ArrayList<>();
     public ChatReplacer(SweetMiao plugin) {
         super(plugin);
         registerEvents();
@@ -50,6 +54,15 @@ public class ChatReplacer extends AbstractModule implements Listener {
         this.priority = Util.valueOr(EventPriority.class, config.getString("priority"), EventPriority.LOW);
         if (priority == EventPriority.MONITOR) {
             priority = EventPriority.LOW;
+        }
+
+        ignorePattern.clear();
+        for (String s : config.getStringList("ignore-pattern")) {
+            try {
+                ignorePattern.add(Pattern.compile(s));
+            } catch (Exception e) {
+                warn("无法编译正则表达式 " + s);
+            }
         }
 
         meow = config.getString("meow", "喵");
@@ -80,6 +93,15 @@ public class ChatReplacer extends AbstractModule implements Listener {
 
         HandlerList.unregisterAll(this);
         Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, this, priority, onChat, plugin);
+    }
+
+    public boolean matchAnyIgnorePattern(String s) {
+        for (Pattern pattern : ignorePattern) {
+            if (matchPattern(pattern, s)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable
@@ -139,5 +161,10 @@ public class ChatReplacer extends AbstractModule implements Listener {
         if (!m.find()) return new String[] { str, "" };
         String group = m.group();
         return new String[] { str.substring(0, str.length() - group.length()), group};
+    }
+
+    public static boolean matchPattern(Pattern pattern, String s) {
+        Matcher matcher = pattern.matcher(s);
+        return matcher.matches() && matcher.start() == 0 && matcher.end() == s.length();
     }
 }
