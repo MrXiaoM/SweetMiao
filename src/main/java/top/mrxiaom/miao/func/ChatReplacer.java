@@ -10,6 +10,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.EventExecutor;
 import org.jetbrains.annotations.Nullable;
 import top.mrxiaom.miao.SweetMiao;
+import top.mrxiaom.miao.func.filters.PlayerFilter;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 
@@ -38,6 +39,7 @@ public class ChatReplacer extends AbstractModule implements Listener {
             moodWordsSpecialQuestion = new ArrayList<>();
     private final List<Pattern> ignorePattern = new ArrayList<>();
     private final Map<UUID, Integer> disableCountMap = new HashMap<>();
+    private final List<PlayerFilter> playerFilters = new ArrayList<>();
     public ChatReplacer(SweetMiao plugin) {
         super(plugin);
         registerEvents();
@@ -91,6 +93,11 @@ public class ChatReplacer extends AbstractModule implements Listener {
         Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, this, priority, onChat, plugin);
     }
 
+    public void registerPlayerFilter(PlayerFilter filter) {
+        playerFilters.add(filter);
+        playerFilters.sort(Comparator.comparingInt(PlayerFilter::priority));
+    }
+
     public void putDisableCount(UUID player, Integer count) {
         if (count == null || count <= 0) {
             disableCountMap.remove(player);
@@ -100,6 +107,11 @@ public class ChatReplacer extends AbstractModule implements Listener {
     }
 
     private void onChat(Player player, AsyncPlayerChatEvent e) {
+        for (PlayerFilter filter : playerFilters) {
+            if (!filter.check(player)) {
+                return;
+            }
+        }
         UUID uuid = player.getUniqueId();
         int count = disableCountMap.getOrDefault(uuid, 0);
         if (count > 0) {

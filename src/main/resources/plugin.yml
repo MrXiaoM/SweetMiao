@@ -3,6 +3,10 @@ version: '${version}'
 main: top.mrxiaom.miao.SweetMiao
 api-version: 1.13
 authors: [ MrXiaoM ]
+softdepend:
+  - CommandPrompter
+  - QuickShop
+  - TrMenu
 commands:
   sweetmiao:
     description: 'The main command of SweetMiao'
