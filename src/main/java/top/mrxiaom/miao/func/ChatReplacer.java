@@ -13,9 +13,7 @@ import top.mrxiaom.miao.SweetMiao;
 import top.mrxiaom.pluginbase.func.AutoRegister;
 import top.mrxiaom.pluginbase.utils.Util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,10 +28,7 @@ public class ChatReplacer extends AbstractModule implements Listener {
         Player player = e.getPlayer();
         if (player.hasPermission("sweet.miao.chat")
                 && !player.hasPermission("sweet.miao.bypass")) {
-            if (matchAnyIgnorePattern(e.getMessage())) {
-                return;
-            }
-            e.setMessage(processChat(e.getMessage()));
+            onChat(player, e);
         }
     };
     private String meow;
@@ -42,6 +37,7 @@ public class ChatReplacer extends AbstractModule implements Listener {
             moodWordsQuestion = new ArrayList<>(),
             moodWordsSpecialQuestion = new ArrayList<>();
     private final List<Pattern> ignorePattern = new ArrayList<>();
+    private final Map<UUID, Integer> disableCountMap = new HashMap<>();
     public ChatReplacer(SweetMiao plugin) {
         super(plugin);
         registerEvents();
@@ -93,6 +89,27 @@ public class ChatReplacer extends AbstractModule implements Listener {
 
         HandlerList.unregisterAll(this);
         Bukkit.getPluginManager().registerEvent(AsyncPlayerChatEvent.class, this, priority, onChat, plugin);
+    }
+
+    public void putDisableCount(UUID player, Integer count) {
+        if (count == null || count <= 0) {
+            disableCountMap.remove(player);
+        } else {
+            disableCountMap.put(player, count);
+        }
+    }
+
+    private void onChat(Player player, AsyncPlayerChatEvent e) {
+        UUID uuid = player.getUniqueId();
+        int count = disableCountMap.getOrDefault(uuid, 0);
+        if (count > 0) {
+            putDisableCount(uuid, count - 1);
+            return;
+        }
+        if (matchAnyIgnorePattern(e.getMessage())) {
+            return;
+        }
+        e.setMessage(processChat(e.getMessage()));
     }
 
     public boolean matchAnyIgnorePattern(String s) {
@@ -166,5 +183,9 @@ public class ChatReplacer extends AbstractModule implements Listener {
     public static boolean matchPattern(Pattern pattern, String s) {
         Matcher matcher = pattern.matcher(s);
         return matcher.matches() && matcher.start() == 0 && matcher.end() == s.length();
+    }
+
+    public static ChatReplacer inst() {
+        return instanceOf(ChatReplacer.class);
     }
 }
