@@ -1,7 +1,7 @@
 package top.mrxiaom.miao.func.filters;
 
+import me.arasple.mc.trmenu.taboolib.platform.util.ChatListener;
 import org.bukkit.configuration.MemoryConfiguration;
-import taboolib.platform.util.ChatListener;
 import top.mrxiaom.miao.SweetMiao;
 import top.mrxiaom.miao.func.AbstractModule;
 import top.mrxiaom.miao.func.ChatReplacer;

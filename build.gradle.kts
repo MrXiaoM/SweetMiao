@@ -35,7 +35,7 @@ dependencies {
 
     compileOnly("org.maxgamer:QuickShop:5.1.0.5-SNAPSHOT") { isTransitive = false }
     compileOnly("com.cyr1en:CommandPrompter:2.12.0")
-    compileOnly("io.izzel.taboolib:bukkit-util:6.2.3") // TrMenu
+    compileOnly(files("libs/MockTrMenu-bukkit-util-6.2.3.jar"))
 
     implementation("org.jetbrains:annotations:21.0.0")
     implementation("top.mrxiaom:PluginBase:1.3.1")
@@ -56,8 +56,6 @@ tasks {
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")
         }
-        // TODO: 将 TrMenu 支持移到单独模块，TabooLib 对于外部插件对接太不友好了
-        relocate("taboolib.platform.util", "me.arasple.mc.trmenu.taboolib.platform.util")
 
         exclude("top/mrxiaom/pluginbase/func/AbstractGui*")
         exclude("top/mrxiaom/pluginbase/func/gui/*")
