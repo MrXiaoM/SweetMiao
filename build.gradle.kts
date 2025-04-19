@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "top.mrxiaom.miao"
-version = "1.0.3"
+version = "1.0.4"
 val targetJavaVersion = 8
 val shadowGroup = "top.mrxiaom.miao.libs"
 
