@@ -37,8 +37,9 @@ dependencies {
     compileOnly("com.cyr1en:CommandPrompter:2.12.0")
     compileOnly(files("libs/MockTrMenu-bukkit-util-6.2.3.jar"))
 
-    implementation("org.jetbrains:annotations:21.0.0")
-    implementation("top.mrxiaom:PluginBase:1.3.1")
+    implementation("org.jetbrains:annotations:24.0.0")
+    implementation("com.github.technicallycoded:FoliaLib:0.4.4")
+    implementation("top.mrxiaom:PluginBase:1.3.8")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
@@ -52,6 +53,7 @@ tasks {
         mapOf(
             "org.intellij.lang.annotations" to "annotations.intellij",
             "org.jetbrains.annotations" to "annotations.jetbrains",
+            "com.tcoded.folialib" to "folialib",
             "top.mrxiaom.pluginbase" to "base",
         ).forEach { (original, target) ->
             relocate(original, "$shadowGroup.$target")

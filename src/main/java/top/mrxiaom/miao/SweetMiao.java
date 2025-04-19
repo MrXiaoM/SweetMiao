@@ -1,8 +1,7 @@
 package top.mrxiaom.miao;
         
-import org.jetbrains.annotations.NotNull;
 import top.mrxiaom.pluginbase.BukkitPlugin;
-import top.mrxiaom.pluginbase.EconomyHolder;
+import top.mrxiaom.pluginbase.utils.scheduler.FoliaLibScheduler;
 
 public class SweetMiao extends BukkitPlugin {
     public static SweetMiao getInstance() {
@@ -18,6 +17,7 @@ public class SweetMiao extends BukkitPlugin {
                 .vaultEconomy(false)
                 .scanIgnore("top.mrxiaom.sweetmiao.libs")
         );
+        scheduler = new FoliaLibScheduler(this);
     }
 
 
