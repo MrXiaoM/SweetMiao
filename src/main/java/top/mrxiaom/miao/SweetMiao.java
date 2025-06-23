@@ -10,11 +10,6 @@ public class SweetMiao extends BukkitPlugin {
 
     public SweetMiao() {
         super(options()
-                .bungee(false)
-                .adventure(false)
-                .database(false)
-                .reconnectDatabaseWhenReloadConfig(false)
-                .vaultEconomy(false)
                 .scanIgnore("top.mrxiaom.sweetmiao.libs")
         );
         scheduler = new FoliaLibScheduler(this);

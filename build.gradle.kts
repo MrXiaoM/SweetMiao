@@ -1,7 +1,7 @@
 plugins {
     java
     `maven-publish`
-    id ("com.github.johnrengelman.shadow") version "7.0.0"
+    id ("com.gradleup.shadow") version "8.3.0"
 }
 
 group = "top.mrxiaom.miao"
@@ -10,14 +10,10 @@ val targetJavaVersion = 8
 val shadowGroup = "top.mrxiaom.miao.libs"
 
 repositories {
-    mavenLocal()
     mavenCentral()
-    maven("http://sacredcraft.cn:8081/repository/releases/") {
-        isAllowInsecureProtocol = true
-    }
     maven("https://repo.codemc.io/repository/maven-public/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.helpch.at/releases/")
     maven("https://jitpack.io")
     maven("https://repo.rosewooddev.io/repository/public/")
     maven("https://repo.cyr1en.com/snapshots/") {
@@ -25,7 +21,6 @@ repositories {
             includeGroup("com.cyr1en")
         }
     }
-    maven("https://oss.sonatype.org/content/groups/public/")
 }
 
 @Suppress("VulnerableLibrariesLocal")
@@ -39,7 +34,7 @@ dependencies {
 
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("com.github.technicallycoded:FoliaLib:0.4.4")
-    implementation("top.mrxiaom:PluginBase:1.3.8")
+    implementation("top.mrxiaom:PluginBase:1.4.9")
 }
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
